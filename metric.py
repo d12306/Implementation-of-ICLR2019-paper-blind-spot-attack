@@ -44,7 +44,7 @@ attack = LinfPGDAttack(model,
                        config['random_start'],
                        config['loss_func'])
 '''
-# training code
+# generate the embeddings of the training set and the testing set.
 
 '''
 with tf.Session() as sess:
@@ -86,13 +86,6 @@ with tf.Session() as sess:
 
     print('finish....')
 
-'''
-
-# testing code for hidden calculation
-#f = np.load('./mnist_1_0_test.npz')
-
-#data_test, labels_test = f['x_test'], f['y_test']
-'''
 with tf.Session() as sess:
 
     saver.restore(sess, model_file)
@@ -163,10 +156,10 @@ for j in range(len(test_data)):
 	print('finish {} sample...'.format(index))
 	print(hhh)
 	index += 1
-np.save('mnist_natural_test_rank.npy', distance_all)
-
-
+np.save('mnist_adv_test_rank.npy', distance_all)
 '''
+
+
 '''
 #prepare the perturbed images.
 #----------------1-0---------------------
@@ -207,7 +200,7 @@ np.savez('mnist_0.7_0_test', x_test = x_batch * 0.7 ,y_test = y_batch)
 
 # generate the fake images using cw2 attack or pgd attack.
 #from cw_attack import *
-'''
+
 f = np.load('./mnist_1_0_test.npz')
 
 data_test, labels_test = f['x_test'], f['y_test']
@@ -252,14 +245,14 @@ with tf.Session() as sess:
 	
     print(len(adv))
 
-    np.save('adv_1_0_mnist_natural.npy', adv)
+    np.save('adv_1_0_mnist_adv.npy', adv)
 
     print('finish....')
 
-np.save('temp_1_0.npy',data_test)
+#np.save('temp_1_0.npy',data_test)
+
+
 '''
-
-
 # verifying the distance between the testing images and the training set.
 def subtract (a_list,b_list):
     ret_list = []
@@ -296,17 +289,6 @@ print(np.mean(dist_false))
 print(np.mean(dist_true))
 
 import matplotlib.pyplot as plt
-'''
-x = list(range(len(dist_true)))
-x1 = list(range(len(dist_false)))
-
-plt.subplot(211) 
-plt.plot(x, dist_true)
-plt.subplot(212)
-plt.plot(x1, dist_false)
-
-plt.show()
-'''
 
 
 # plot the result like something in figure 1, 2 and 3
@@ -344,4 +326,4 @@ for k in final_x:
 
 plt.plot(final_x, final_y)
 plt.show()
-
+'''
