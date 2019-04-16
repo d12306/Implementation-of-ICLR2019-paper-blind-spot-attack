@@ -17,9 +17,9 @@
 
   "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
   "epsilon": 0.3,
-  "k": 10, 
-  "a": 0.1,
+  "k": 20, 
+  "a": 0.01,
   "random_start": true,
   "loss_func": "cw",
-  "store_adv_path": "adv_1_0_mnist_natural.npy"
+  "store_adv_path": "adv_1_0_mnist_adv.npy"
 }

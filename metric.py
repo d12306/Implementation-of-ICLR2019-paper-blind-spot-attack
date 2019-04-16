@@ -30,7 +30,7 @@ mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
 model = Model()
 saver = tf.train.Saver()
-model_file = tf.train.latest_checkpoint('C:\\Users\\Administrator\\Desktop\\mnist_challenge-master\\models\\secret')
+model_file = tf.train.latest_checkpoint('C:\\Users\\Administrator\\Desktop\\mnist_challenge-master\\models\\natural')
 
 #options: ./models/adv_trained.
 
@@ -197,7 +197,7 @@ np.savez('mnist_0.7_0_test', x_test = x_batch * 0.7 ,y_test = y_batch)
 '''
 
 
-
+'''
 # generate the fake images using cw2 attack or pgd attack.
 #from cw_attack import *
 
@@ -248,11 +248,11 @@ with tf.Session() as sess:
     np.save('adv_1_0_mnist_adv.npy', adv)
 
     print('finish....')
-
+'''
 #np.save('temp_1_0.npy',data_test)
 
-
 '''
+
 # verifying the distance between the testing images and the training set.
 def subtract (a_list,b_list):
     ret_list = []
@@ -265,7 +265,7 @@ def subtract (a_list,b_list):
     return ret_list
 
 prediction = np.load('prediction_0.8_0.npy')
-distance = np.load('mnist_natural_test_rank.npy')
+distance = np.load('mnist_adv_test_rank.npy')
 print(np.max(distance))
 print(np.min(distance))
 true_index = []
@@ -327,3 +327,7 @@ for k in final_x:
 plt.plot(final_x, final_y)
 plt.show()
 '''
+
+
+#compute the KL-divergence of training and testing images. 
+
