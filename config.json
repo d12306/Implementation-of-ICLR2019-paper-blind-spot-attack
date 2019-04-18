@@ -17,7 +17,7 @@
 
   "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
   "epsilon": 0.3,
-  "k": 20, 
+  "k": 40, 
   "a": 0.01,
   "random_start": true,
   "loss_func": "cw",

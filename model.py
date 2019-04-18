@@ -78,3 +78,11 @@ class Model(object):
                             ksize = [1,2,2,1],
                             strides=[1,2,2,1],
                             padding='SAME')
+  def cw2(self, sess):
+
+    from art.classifiers import TFClassifier
+    tfc = TFClassifier(clip_values=(0, 1), input_ph=self.x_image, logits=self.pre_softmax, output_ph=self.y_input, train=None,
+                       loss=self.xent, learning=None, sess=sess)
+
+    return tfc
+

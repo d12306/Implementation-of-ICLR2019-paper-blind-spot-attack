@@ -34,10 +34,10 @@ def run_attack(checkpoint, x_adv, epsilon):
   x_nat = mnist.test.images
   l_inf = np.amax(np.abs(x_nat - x_adv))
   
-  if l_inf > epsilon + 0.0001:
-    print('maximum perturbation found: {}'.format(l_inf))
-    print('maximum perturbation allowed: {}'.format(epsilon))
-    return
+  #if l_inf > epsilon + 0.0001:
+  #  print('maximum perturbation found: {}'.format(l_inf))
+  #  print('maximum perturbation allowed: {}'.format(epsilon))
+  #  return
 
   y_pred = [] # label accumulator
   prediction_all =[]
@@ -73,7 +73,7 @@ def run_attack(checkpoint, x_adv, epsilon):
       total_corr += cur_corr
       y_pred.append(y_pred_batch)
 
-    np.save('prediction_0.8_0.npy',prediction_all)
+    np.save('prediction_1_0.npy',prediction_all)
     
     print(prediction)
 

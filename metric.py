@@ -16,7 +16,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 from model import Model
 from pgd_attack import LinfPGDAttack
-
+#from cw2 import *
 
 with open('config.json') as config_file:
     config = json.load(config_file)
@@ -30,7 +30,7 @@ mnist = input_data.read_data_sets('MNIST_data', one_hot=False)
 global_step = tf.contrib.framework.get_or_create_global_step()
 model = Model()
 saver = tf.train.Saver()
-model_file = tf.train.latest_checkpoint('C:\\Users\\Administrator\\Desktop\\mnist_challenge-master\\models\\natural')
+model_file = tf.train.latest_checkpoint('C:\\Users\\Administrator\\Desktop\\Implementation-of-ICLR2019-paper-blind-spot-attack\\Implementation-of-ICLR2019-paper-blind-spot-attack\\models\\secret')
 
 #options: ./models/adv_trained.
 
@@ -163,14 +163,14 @@ np.save('mnist_adv_test_rank.npy', distance_all)
 '''
 #prepare the perturbed images.
 #----------------1-0---------------------
-x_batch = mnist.test.images
-y_batch = mnist.test.labels
+
 
 #print(x_batch[0])
 
 np.savez('mnist_1_0_test',x_test = x_batch, y_test = y_batch)
 '''
-
+x_batch = mnist.test.images
+y_batch = mnist.test.labels
 
 '''
 
@@ -197,10 +197,10 @@ np.savez('mnist_0.7_0_test', x_test = x_batch * 0.7 ,y_test = y_batch)
 '''
 
 
-'''
+
 # generate the fake images using cw2 attack or pgd attack.
 #from cw_attack import *
-
+'''
 f = np.load('./mnist_1_0_test.npz')
 
 data_test, labels_test = f['x_test'], f['y_test']
@@ -251,8 +251,11 @@ with tf.Session() as sess:
 '''
 #np.save('temp_1_0.npy',data_test)
 
-'''
 
+    
+
+
+'''
 # verifying the distance between the testing images and the training set.
 def subtract (a_list,b_list):
     ret_list = []
@@ -264,7 +267,7 @@ def subtract (a_list,b_list):
             ret_list.append(item)
     return ret_list
 
-prediction = np.load('prediction_0.8_0.npy')
+prediction = np.load('prediction_1_0.npy')
 distance = np.load('mnist_adv_test_rank.npy')
 print(np.max(distance))
 print(np.min(distance))
@@ -329,5 +332,124 @@ plt.show()
 '''
 
 
+
+
+
 #compute the KL-divergence of training and testing images. 
+
+# plot the exemplary images when the distance is large (feature extrator is adv_trained model)
+
+result = np.load('prediction_1_0.npy')
+
+
+import matplotlib.pyplot as plt
+import operator
+
+
+f = np.load('./mnist_1_0_test.npz')
+data_test, labels_test = f['x_test'], f['y_test']
+
+
+#f = np.load('./mnist_0.9_0.05_test.npz')
+distance = np.load('mnist_adv_test_rank.npy') # the distances. 
+
+dist_dict = {}
+for i in range(len(distance)):
+	dist_dict[i] = distance[i]
+
+temp = sorted(dist_dict.items(), key = operator.itemgetter(1))
+
+#print(temp)
+image_for_generate = []
+label_for_generate = []
+
+#print(temp[9995:10000])
+# selecting the maximum 5 samples.
+for k in temp[9900:10000]:
+
+	if not result[k[0]] and len(image_for_generate) < 10:
+		image_for_generate.append( data_test[ k[0] ])
+		label_for_generate.append( labels_test [ k[0] ])
+
+assert len(image_for_generate) <= 10
+
+
+
+
+attack = LinfPGDAttack(model, 
+                       config['epsilon'],
+                       config['k'],
+                       config['a'],
+                       config['random_start'],
+                       config['loss_func'])
+
+with tf.Session() as sess:
+
+    saver.restore(sess, model_file)
+    
+    #eval_batch_size = 1
+
+    #num_batches = int(math.ceil( len(mnist.test.images) / eval_batch_size))
+    #print(num_batches)
+    #adv = []
+
+    #for ibatch in range(num_batches):
+      #bstart = ibatch * eval_batch_size
+      #bend = min(bstart + eval_batch_size, len(mnist.test.images))
+
+    x_batch = np.asarray(image_for_generate) # note that here is the perturbed images not the original images. 
+      #print(x_batch.shape)
+    y_batch = np.asarray(label_for_generate)
+
+    x_batch_adv = attack.perturb(x_batch, y_batch, sess)
+
+    print(x_batch_adv.shape)
+
+    
+	
+    #print(len(adv))
+
+    np.save('1_0_plot_adv.npy', x_batch_adv)
+
+    print('finish....')
+
+
+
+print(label_for_generate)
+a = np.load('1_0_plot_adv.npy')
+print(a.shape)
+all = []
+for i in range(len(a)):
+	b = a[i].reshape((28,28))
+	all.append(b)
+all = np.asarray(all)
+print(all.shape)
+
+def show_images(images, cols = 1, titles = None):
+    """Display a list of images in a single figure with matplotlib.
+    
+    Parameters
+    ---------
+    images: List of np.arrays compatible with plt.imshow.
+    
+    cols (Default = 1): Number of columns in figure (number of rows is 
+                        set to np.ceil(n_images/float(cols))).
+    
+    titles: List of titles corresponding to each image. Must have
+            the same length as titles.
+    """
+    assert((titles is None) or (len(images) == len(titles)))
+    n_images = len(images)
+    if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+    fig = plt.figure()
+    for n, (image, title) in enumerate(zip(images, titles)):
+        a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        if image.ndim == 2:
+            plt.gray()
+        plt.imshow(image)
+        a.set_title(title)
+    fig.set_size_inches(np.array(fig.get_size_inches()) * n_images)
+    plt.show()
+
+show_images(all, titles= label_for_generate)
 
