@@ -86,6 +86,8 @@ with tf.Session() as sess:
 
     print('finish....')
 
+data = np.load('adv_1_0_mnist_adv.npy')
+
 with tf.Session() as sess:
 
     saver.restore(sess, model_file)
@@ -101,7 +103,7 @@ with tf.Session() as sess:
       bstart = ibatch * eval_batch_size
       bend = min(bstart + eval_batch_size, len(mnist.test.images))
 
-      x_batch = mnist.test.images[bstart:bend, :]
+      x_batch = data[bstart:bend, :]#mnist.test.images
       y_batch = mnist.test.labels[bstart:bend]
       
 
@@ -122,12 +124,15 @@ with tf.Session() as sess:
 
     print(len(train_hidden))
 
-    np.save('hidden_mnist_adv_test.npy', train_hidden)
+    np.save('hidden_mnist_adv_test_temp.npy', train_hidden)
 
     print('finish....')
-'''
+
 
 # computing the distance in the natural images. 
+
+'''
+
 
 '''
 def averagenum(num):
@@ -136,7 +141,9 @@ def averagenum(num):
         nsum += num[i]
     return nsum / len(num)
 
-test_data = np.load('hidden_mnist_adv_test.npy')
+test_data = np.load('hidden_mnist_adv_test_temp.npy')
+
+#test_data = np.load('adv_1_0_mnist_adv.npy')
 train_data = np.load('hidden_mnist_adv_train.npy')
 
 distance_all = []
@@ -156,9 +163,9 @@ for j in range(len(test_data)):
 	print('finish {} sample...'.format(index))
 	print(hhh)
 	index += 1
-np.save('mnist_adv_test_rank.npy', distance_all)
-'''
+np.save('mnist_adv_test_rank_temp.npy', distance_all)
 
+'''
 
 '''
 #prepare the perturbed images.
@@ -170,6 +177,7 @@ np.save('mnist_adv_test_rank.npy', distance_all)
 np.savez('mnist_1_0_test',x_test = x_batch, y_test = y_batch)
 '''
 x_batch = mnist.test.images
+#print(x_batch[0])
 y_batch = mnist.test.labels
 
 '''
@@ -268,7 +276,7 @@ def subtract (a_list,b_list):
     return ret_list
 
 prediction = np.load('prediction_1_0.npy')
-distance = np.load('mnist_adv_test_rank.npy')
+distance = np.load('mnist_adv_test_rank_temp.npy')
 print(np.max(distance))
 print(np.min(distance))
 true_index = []
@@ -329,16 +337,16 @@ for k in final_x:
 
 plt.plot(final_x, final_y)
 plt.show()
-'''
 
+'''
 
 
 
 
 #compute the KL-divergence of training and testing images. 
 
-# plot the exemplary images when the distance is large (feature extrator is adv_trained model)
-
+# plot the exemplary successfullt attacked images when the distance is large (feature extrator is adv_trained model)
+'''
 result = np.load('prediction_1_0.npy')
 
 
@@ -425,6 +433,12 @@ for i in range(len(a)):
 all = np.asarray(all)
 print(all.shape)
 
+#for obj in range(len(all)):
+ # plt.gray()
+ # plt.imsave( 'C:\\Users\\Administrator\\Desktop\\Implementation-of-ICLR2019-paper-blind-spot-attack\\Implementation-of-ICLR2019-paper-blind-spot-attack\\image\\'+\
+ #   str(obj) + '.png',all[obj] )
+
+
 def show_images(images, cols = 1, titles = None):
     """Display a list of images in a single figure with matplotlib.
     
@@ -452,4 +466,27 @@ def show_images(images, cols = 1, titles = None):
     plt.show()
 
 show_images(all, titles= label_for_generate)
+
+
+'''
+'''
+with tf.Session() as sess:
+  saver.restore(sess, model_file)
+  x_batch = image_for_generate
+  y_batch = label_for_generate
+  
+  dict_adv = {model.x_input: x_batch, model.y_input: y_batch}
+      
+
+  hidden = sess.run([model.y_pred], feed_dict=dict_adv)
+
+  print(hidden)
+
+  print('finish.....')
+
+'''
+
+
+
+
 

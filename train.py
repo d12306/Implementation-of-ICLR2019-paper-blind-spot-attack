@@ -79,7 +79,7 @@ with tf.Session() as sess:
   # Main training loop
   for ii in range(max_num_training_steps):
     x_batch, y_batch = mnist.train.next_batch(batch_size)
-
+    print(x_batch[0])
     # Compute Adversarial Perturbations
     start = timer()
     x_batch_adv = attack.perturb(x_batch, y_batch, sess)
